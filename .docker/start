@@ -6,12 +6,12 @@ export COMPOSER_MEMORY_LIMIT=-1
 
 composer install --optimize-autoloader
 php bin/console migration:migrate
-php bin/console assets:install --symlink --relative
+php bin/console assets:install
 
 npm install -g npm@10.9.0
 npm install
 npm run build
-
+php bin/console c:c
 /usr/local/sbin/php-fpm --nodaemonize
 
 echo '**** End configuration Symfony *****'

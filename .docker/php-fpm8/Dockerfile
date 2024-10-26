@@ -7,13 +7,17 @@ ENV COMPOSER_PROCESS_TIMEOUT=600
 RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
+    libsqlite3-dev \
     libpng-dev \
     libzip-dev \
+    libicu-dev \
+    libpq-dev \
     unzip \
     gnupg2 \
     && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install intl pdo pdo_sqlite pdo_mysql opcache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
