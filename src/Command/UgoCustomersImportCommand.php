@@ -69,10 +69,11 @@ class UgoCustomersImportCommand extends Command
         foreach ($records as $record) {
             if ($record["customer_id"] !== null) {
                 $customer = new Customer();
-                $oldCustomer = $this->entityManager->getRepository(Customer::class)->findby(['customer_id' => $record["customer_id"], 'email' => $record["email"]]);
-                if (!$oldCustomer) {
+                $title = $record["title"] == 1 ? 'mme' : 'm';
+                $oldCustomer = $this->entityManager->getRepository(Customer::class)->findby(['customer_id' => $record["customer_id"], 'title' => $title]);
+                if (empty($oldCustomer)) {
                     $customer->setCustomerId($record["customer_id"]);
-                    $customer->setTitle($record["title"] == 1 ? 'mme' : 'm');
+                    $customer->setTitle($title);
                     $customer->setLastname($record["lastname"] ?? "");
                     $customer->setFirstname($record["firstname"] ?? "");
                     $customer->setPostalCode($record["postal_code"] ?? "");

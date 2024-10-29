@@ -74,7 +74,7 @@ class UgoPurchasesImportCommand extends Command
         foreach ($records as $row) {
             $order = new Order();
             $customer = $this->entityManager->getRepository(Customer::class)->findOneBy(['customer_id' => $row["customer_id"]]);
-            if (!$customer) {
+            if ($customer) {
                 $purchaseIdentifier = $this->parseDateToDateTime($row['purchase_identifier']);
                 $productId = is_numeric($row["product_id"] ?? null) ? (int)$row["product_id"] : random_int(1, 100);
                 $order->setOrderId($purchaseIdentifier);
