@@ -12,12 +12,15 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libicu-dev \
     libpq-dev \
+    nginx \
     unzip \
     gnupg2 \
     && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl pdo pdo_sqlite pdo_mysql opcache \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -27,16 +30,15 @@ RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony && \
     chmod +x /usr/local/bin/symfony
 
 ENV COMPOSER_ORIGINAL_INIS=${PHP_INI_DIR}/conf.d/php-composer.ini
-COPY ./.docker/php-fpm8/php-composer.ini $COMPOSER_ORIGINAL_INIS
-COPY ./.docker/start /usr/local/bin/
+COPY .docker/php-fpm8/php-composer.ini $COMPOSER_ORIGINAL_INIS
+COPY .docker/start /usr/local/bin/start
+RUN chmod +x /usr/local/bin/start
 
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
 
 WORKDIR /var/www/html
 
-RUN usermod -u 1000 www-data \
-    && usermod -a -G www-data root \
-    && chmod +x /usr/local/bin/start
+RUN usermod -u 1000 www-data && usermod -a -G www-data root
 
+#ENTRYPOINT ["/usr/local/bin/start"]
 CMD ["start"]
