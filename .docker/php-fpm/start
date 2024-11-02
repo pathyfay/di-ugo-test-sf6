@@ -5,14 +5,14 @@ export NGINX_DOCUMENT_ROOT="${NGINX_DOCUMENT_ROOT:-/var/www/html/public}"
 export COMPOSER_MEMORY_LIMIT=-1
 
 echo '**** Install dependencies Symfony *****'
-#composer install --optimize-autoloader
-#php bin/console assets:install
-#
-echo '**** Start configuration Npm *****'
-#npm install -g npm@10.9.0
-#npm install
+composer install --optimize-autoloader
+php bin/console assets:install
 
-#npm run dev
+echo '**** Start configuration Npm *****'
+npm install -g npm@10.9.0
+npm install
+
+npm run dev
 
 chown -R www-data:www-data /var/www/html/public /var/www/html/var && \
 chmod +x bin/console /var/www/html/public /var/www/html/var /var/www/html/vendor
