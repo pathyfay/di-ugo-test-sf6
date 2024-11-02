@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     nginx \
     unzip \
     gnupg2 \
+    default-mysql-client \
     && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -23,15 +24,16 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable redis \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony && \
     chmod +x /usr/local/bin/symfony
 
 ENV COMPOSER_ORIGINAL_INIS=${PHP_INI_DIR}/conf.d/php-composer.ini
-COPY .docker/php-fpm8/php-composer.ini $COMPOSER_ORIGINAL_INIS
-COPY .docker/start /usr/local/bin/start
+COPY ./.docker/php-fpm/php-composer.ini $COMPOSER_ORIGINAL_INIS
+COPY ./.docker/php-fpm/start /usr/local/bin/
 RUN chmod +x /usr/local/bin/start
 
 RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
@@ -40,5 +42,4 @@ WORKDIR /var/www/html
 
 RUN usermod -u 1000 www-data && usermod -a -G www-data root
 
-#ENTRYPOINT ["/usr/local/bin/start"]
 CMD ["start"]

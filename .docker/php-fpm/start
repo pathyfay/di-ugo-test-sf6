@@ -1,16 +1,18 @@
-#!/bin/bash
+#!/bin/sh
 
 echo '**** Start configuration Symfony *****'
 export NGINX_DOCUMENT_ROOT="${NGINX_DOCUMENT_ROOT:-/var/www/html/public}"
 export COMPOSER_MEMORY_LIMIT=-1
 
-composer install --optimize-autoloader
-php bin/console assets:install
+echo '**** Install dependencies Symfony *****'
+#composer install --optimize-autoloader
+#php bin/console assets:install
+#
+echo '**** Start configuration Npm *****'
+#npm install -g npm@10.9.0
+#npm install
 
-npm install -g npm@10.9.0
-npm install
-
-npm run dev
+#npm run dev
 
 chown -R www-data:www-data /var/www/html/public /var/www/html/var && \
 chmod +x bin/console /var/www/html/public /var/www/html/var /var/www/html/vendor
@@ -18,10 +20,13 @@ mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
 chown -R www-data:www-data /var/www/html/var/cache /var/www/html/var/log && \
 chmod -R 750 /var/www/html/var/cache /var/www/html/var/log
 
+echo '**** Initialiaze BDD  and Import Csv *****'
+php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 
 php bin/console ugo:orders:import --customers /var/www/html/data/csv/customers.csv --purchases /var/www/html/data/csv/purchases.csv
 
+echo '**** Fpm starting *****'
 /usr/local/sbin/php-fpm --nodaemonize
 
 echo '**** End configuration Symfony *****'

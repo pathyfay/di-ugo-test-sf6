@@ -1,12 +1,14 @@
+#version: '3.8'
 services:
-
   backend:
     build:
       context: .
-      dockerfile: .docker/php-fpm8/Dockerfile
+      dockerfile: ./.docker/php-fpm/Dockerfile
     container_name: backend
     networks:
       - localhost-network
+    depends_on:
+      - db-mysql
     volumes:
       - ./:/var/www/html
       - ./var/log:/var/log
@@ -17,7 +19,7 @@ services:
       dockerfile: .docker/nginx/Dockerfile
     container_name: server-nginx
     ports:
-      - "8080:80"
+      - ${APP_PORT}:80
     depends_on:
       - backend
     networks:
@@ -26,6 +28,25 @@ services:
       - ./:/var/www/html
       - ./var/log/nginx:/var/log/nginx
 
+  db-mysql:
+    build:
+      context: .
+      dockerfile: ./.docker/mysql/Dockerfile
+    container_name: db-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_SERVER: "${MYSQL_SERVER}"
+      MYSQL_PORT: "${MYSQL_PORT}"
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    networks:
+      - localhost-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   redis:
     image: redis:latest
     container_name: redis
@@ -33,7 +54,13 @@ services:
       - "6379:6379"
     networks:
       - localhost-network
+    volumes:
+      - redis_data:/data
 
 networks:
   localhost-network:
     driver: bridge
+
+volumes:
+  redis_data:
+  mysql_data:

@@ -63,6 +63,6 @@ when@prod:
                 formatter: monolog.formatter.json
             rotating_file:
                 type: rotating_file
-                path: "%kernel.logs_dir%/rotating_%kernel.environment%.log"
+                path: "%kernel.logs_dir%/sf6_%kernel.environment%.log"
                 level: debug
                 max_files: 10
