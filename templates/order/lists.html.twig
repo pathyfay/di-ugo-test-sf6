@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="app-width-100 mt-5 table-responsive">
+        <h1 class="m-2">Liste des Orders</h1>
+        <div class="border-2 app-grid-container">
+            <form class="float-end mb-4" action="{{ path('order_new') }}" method="get" style="display: inline;">
+                <button type="submit" class="btn btn-info">Créer un order</button>
+            </form>
+        </div>
+        <table class="table table-primary table-striped table-bordered overflow-x-auto">
+            <thead>
+            <tr>
+                {% for property in ['id','product_id', 'Purchase_identifier', 'Quantity', 'Price', 'Currency', 'Date', 'actions'] %}
+                    <th>{{ property|capitalize }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.productId }}</td>
+                    <td>{{ order.orderId |date('Y-m-d H:i:s') }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>{{ order.price | number_format(2) }}</td>
+                    <td>{{ order.currency }}</td>
+                    <td>{{ order.date|date('Y-m-d H:i:s') }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <form action="{{ path('order_show', { id: order.id }) }}" method="get"
+                                  style="display: inline;">
+                                <button type="submit" class="btn btn-outline-primary m-1">Voir</button>
+                            </form>
+                            <form action="{{ path('order_edit', { id: order.id }) }}" method="get"
+                                  style="display: inline;">
+                                <button type="submit" class="btn btn-outline-secondary m-1">Modifier</button>
+                            </form>
+                            <form action="{{ path('order_delete', { id: order.id }) }}" method="post"
+                                  style="display: inline;"
+                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet order ?');">
+                                <button type="submit" class="btn btn-outline-danger m-1">Supprimer</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun client trouvé.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

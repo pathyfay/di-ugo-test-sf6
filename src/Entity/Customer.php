@@ -21,11 +21,8 @@ class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id;
-
-    #[ORM\Column(type: 'integer')]
-    private int $customer_id;
+    #[ORM\Column(type: "integer", unique: true)]
+    private ?int $customer_id = null;
 
     #[ORM\Column(length: 50)]
     private string $title;
@@ -54,37 +51,18 @@ class Customer
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCustomerId(): int
+    public function getCustomerId(): ?int
     {
         return $this->customer_id;
     }
 
     /**
-     * @param int $customer_id
+     * @param int|null $customer_id
      * @return $this
      */
-    public function setCustomerId(int $customer_id): static
+    public function setCustomerId(?int $customer_id): static
     {
         $this->customer_id = $customer_id;
 

@@ -15,4 +15,13 @@ class HomeController extends AbstractController
             'controller_name' => 'HomeController',
         ]);
     }
+
+    #[Route('/test-session', name: 'test_session')]
+    public function testSession(): Response
+    {
+        $this->get('session')->set('key', 'value');
+        $value = $this->get('session')->get('key');
+
+        return new Response("La valeur de la session est : $value");
+    }
 }

@@ -31,6 +31,9 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony*/bin/symfony /usr/local/bin/symfony && \
     chmod +x /usr/local/bin/symfony
 
+# Assurez-vous que le répertoire de sessions est accessible
+RUN mkdir -p /tmp/sessions && chown -R www-data:www-data /tmp/sessions
+
 ENV COMPOSER_ORIGINAL_INIS=${PHP_INI_DIR}/conf.d/php-composer.ini
 COPY ./.docker/php-fpm/php-composer.ini $COMPOSER_ORIGINAL_INIS
 COPY ./.docker/php-fpm/start /usr/local/bin/

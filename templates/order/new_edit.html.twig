@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="underline mb-4">Formulaire Order</h1>
+    <fieldset class="border p-4 rounded shadow-lg">
+        <legend class="w-auto px-3 text-primary fw-semibold text-decoration-underline">
+            {{ order.id ? 'Modifier order' : 'Créer un nouveau order' }}
+        </legend>
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+
+        <button class="btn btn-lg btn-success my-3 form-control"
+                type="submit">{{ order.id ? 'Enregistrer les modifications' : 'Créer un Order' }}
+        </button>
+        {{ form_end(form) }}
+    </fieldset>
+{% endblock %}

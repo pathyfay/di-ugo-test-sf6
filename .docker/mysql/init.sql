@@ -1,4 +1,5 @@
 CREATE DATABASE IF NOT EXISTS `${MYSQL_DATABASE}`;
+DROP USER IF EXISTS 'fayette'@'%';
 CREATE USER 'fayette'@'%' IDENTIFIED BY 'patrician';
 GRANT ALL ON `sf6_app`.* TO 'fayette'@'localhost';
 -- GRANT ALL ON `${MYSQL_DATABASE}`.* TO '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';

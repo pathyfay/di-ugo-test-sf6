@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>
+        Détails d' order N°{{ order.id }}
+    </h1>
+    <div class="p-4">
+        <form class="float-end mb-4" action="{{ path('order_lists') }}" method="get" style="display: inline;">
+            <button type="submit" class="btn btn-info m-3">Retour à la liste des orders</button>
+        </form>
+        <div>
+            <strong>Order id :</strong> {{ order.orderId | date('Y-m-d H:i:s')}}
+        </div>
+        <div>
+            <strong>Product Id :</strong> {{ order.productId }}
+        </div>
+        <div>
+            <strong>Quantité :</strong> {{ order.quantity }}
+        </div>
+        <div>
+            <strong>Price :</strong> {{ order.price }}
+        </div>
+        <div>
+            <strong>Date :</strong> {{ order.date|date('Y-m-d H:i:s') }}
+        </div>
+        <div class="rounded-image">
+            <img src="{{ asset('build/images/order.png') }}" alt="Image user">
+        </div>
+    </div>
+{% endblock %}

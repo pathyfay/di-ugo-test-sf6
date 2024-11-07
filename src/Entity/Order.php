@@ -15,14 +15,14 @@ class Order
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private DateTimeInterface $order_id;
 
     #[ORM\ManyToOne(targetEntity: Customer::class, cascade: ['persist'], inversedBy: 'orders')]
-    #[ORM\JoinColumn(nullable: false)]
-    private Customer $customer;
+    #[ORM\JoinColumn(name: "customer_id", referencedColumnName: "customer_id", nullable: true)]
+    private ?Customer $customer = null;
 
     #[ORM\Column]
     private int $quantity = 0;

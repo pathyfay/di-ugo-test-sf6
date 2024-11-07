@@ -1,0 +1,9 @@
+#snc_redis:
+#  clients:
+#    default:
+#      type: 'predis'
+#      alias: default
+#      dsn: 'tcp://localhost:6379'
+#  session:
+#    client: default
+#    prefix: 'session:'
