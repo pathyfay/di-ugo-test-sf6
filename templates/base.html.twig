@@ -1,20 +1,149 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Di-Ugo-test{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        <link rel="icon" type="image/x-icon" href="favicon.ico">
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}ftk-it{% endblock %}</title>
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+    {% endblock %}
+</head>
+<body>
+<div class="app-container app-width-80">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3 shadow-3">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand logo" href="/">
+                <img src="{{ asset('build/images/logo.jpg') }}" alt="logo FTK">
+            </a>
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
+            <!-- Bouton Burger -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Contenu menu -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Menu gauche -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.pathInfo == '/users' ? 'active' : '' }}"
+                           href="{{ path('user_list') }}">Utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.pathInfo == '/orders' ? 'active' : '' }}"
+                           href="{{ path('order_list') }}">Commandes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.pathInfo == '/resources' ? 'active' : '' }}"
+                           href="{{ path('resources_list') }}">Resources</a>
+                    </li>
+
+                    <!-- Dropdown Création -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCreate" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Création
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownCreate">
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/users-create' ? 'active' : '' }}"
+                                   href="{{ path('organisme_create') }}">Utilisateur</a></li>
+                            <li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/organismes-create' ? 'active' : '' }}"
+                                   href="{{ path('organisme_create') }}">Organisme</a></li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/products-create' ? 'active' : '' }}"
+                                   href="{{ path('product_create') }}">Product</a></li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/civility-create' ? 'active' : '' }}"
+                                   href="{{ path('civil_status_create') }}">Civilité</a></li>
+                            <li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/civil-status-create' ? 'active' : '' }}"
+                                   href="{{ path('civil_status_create') }}">Etat civile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/operations-create' ? 'active' : '' }}"
+                                   href="{{ path('operation_create') }}">Operation</a></li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.pathInfo == '/type-resource-create' ? 'active' : '' }}"
+                                   href="{{ path('type_resource_create') }}">Type</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Dropdown utilisateur aligné à droite -->
+                {% if app.user %}
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
+                               id="navbarDropdownUser"
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <!-- Avatar Initiales -->
+                                <span class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center me-2"
+                                      style="width: 32px; height: 32px; font-size: 0.9rem;">
+                    {{ app.user.firstName|first ~ app.user.lastName|first }}
+                </span>
+                                Mon compte
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"
+                                aria-labelledby="navbarDropdownUser">
+                                <li><a class="dropdown-item {{ app.request.pathInfo == '/organismes' ? 'active' : '' }}"
+                                       href="{{ path('organisme_list') }}">Organismes</a></li>
+                                <li><a class="dropdown-item {{ app.request.pathInfo == '/operations' ? 'active' : '' }}"
+                                       href="{{ path('operation_list') }}">Operations</a></li>
+                                <li><a class="dropdown-item {{ app.request.pathInfo == '/products' ? 'active' : '' }}"
+                                       href="{{ path('product_list') }}">Products</a></li>
+                                <li><a class="dropdown-item {{ app.request.pathInfo == '/civilities' ? 'active' : '' }}"
+                                       href="{{ path('civility_list') }}">Civilité</a>
+                                </li>
+                                <li><a class="dropdown-item {{ app.request.pathInfo == '/civil-statuses' ? 'active' : '' }}"
+                                       href="{{ path('civil_status_list') }}">Etat civiles</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger {{ app.request.pathInfo == '/logout' ? 'active' : '' }}"
+                                       href="{{ path('app_logout') }}">Déconnexion</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-width-100 p-4 mb-4">
         {% block body %}{% endblock %}
-    </body>
+    </div>
+</div>
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+    {{ encore_entry_script_tags('app') }}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+{% endblock %}
+</body>
 </html>

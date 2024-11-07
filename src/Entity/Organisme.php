@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\OrganismeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrganismeRepository::class)]
@@ -14,32 +13,29 @@ class Organisme
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(length: 100)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $reference = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $note = null;
 
-    #[ORM\Column(type: Types::BLOB, nullable: false)]
-    private $logo = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logo = null;
 
-    /**
-     * @var Collection<int, Ressource>
-     */
-    #[ORM\OneToMany(targetEntity: Ressource::class, mappedBy: 'organisme')]
-    private Collection $ressources;
+    #[ORM\OneToMany(targetEntity: Resource::class, mappedBy: 'organisme')]
+    private Collection $resources;
 
     public function __construct()
     {
-        $this->ressources = new ArrayCollection();
+        $this->resources = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -102,45 +98,47 @@ class Organisme
         return $this;
     }
 
-    public function getLogo()
+    public function getLogo(): ?string
     {
         return $this->logo;
     }
 
-    public function setLogo($logo = null): static
+    public function setLogo(?string $logo = null): static
     {
         $this->logo = $logo;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Ressource>
-     */
-    public function getRessources(): Collection
+    public function getResources(): Collection
     {
-        return $this->ressources;
+        return $this->resources;
     }
 
-    public function addRessource(Ressource $ressource): static
+    public function setResources(Collection $resources): void
     {
-        if (!$this->ressources->contains($ressource)) {
-            $this->ressources->add($ressource);
-            $ressource->setOrganisme($this);
-        }
-
-        return $this;
+        $this->resources = $resources;
     }
 
-    public function removeRessource(Ressource $ressource): static
+    public function getArray(): array
     {
-        if ($this->ressources->removeElement($ressource)) {
-            // set the owning side to null (unless already changed)
-            if ($ressource->getOrganisme() === $this) {
-                $ressource->setOrganisme(null);
-            }
-        }
+        return $this->toArray();
+    }
 
-        return $this;
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'nom' => $this->getNom(),
+            'reference' => $this->getReference(),
+            'note' => $this->getNote(),
+            'logo' => $this->getLogo(),
+            'resources' => array_map(fn(Resource $resource) => $resource->getId(), $this->getResources()->toArray())
+        ];
+    }
+
+    public function __toString(): string
+    {
+        return (string)$this->getId();
     }
 }

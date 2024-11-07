@@ -21,12 +21,12 @@ class UgoOrdersImportCommand extends Command
 {
     /**
      * @param EntityManagerInterface $entityManager
-     * @param UgoCustomersImportCommand $customersImportCommand
+     * @param UgoCustomersImportCommand $usersImportCommand
      * @param UgoPurchasesImportCommand $purchasesImportCommand
      */
     public function __construct(
         public EntityManagerInterface    $entityManager,
-        public UgoCustomersImportCommand $customersImportCommand,
+        public UgoCustomersImportCommand $usersImportCommand,
         public UgoPurchasesImportCommand $purchasesImportCommand)
     {
         parent::__construct();
@@ -60,7 +60,7 @@ class UgoOrdersImportCommand extends Command
         }
 
         $requiredFiles = [
-            'customers' => 'You must add a csv customer.csv.',
+            'customers' => 'You must add a csv user.csv.',
             'purchases' => 'You must add a csv purchases.csv.',
         ];
 
@@ -71,15 +71,15 @@ class UgoOrdersImportCommand extends Command
             }
         }
 
-        $customersImportCommand = $this->getApplication()->find('ugo:customers:import');
-        $customersArguments = new ArrayInput(['customersFile' => $input->getArgument('customersFile')]);
-        $customersImportCommand->run($customersArguments, $output);
+        $usersImportCommand = $this->getApplication()->find('ugo:customers:import');
+        $usersArguments = new ArrayInput(['customersFile' => $input->getArgument('customersFile')]);
+        $usersImportCommand->run($usersArguments, $output);
 
         $purchasesImportCommand = $this->getApplication()->find('ugo:purchases:import');
         $purchasesArguments = new ArrayInput(['purchasesFile' => $input->getArgument('purchasesFile')]);
         $purchasesImportCommand->run($purchasesArguments, $output);
 
-        $output->writeln('Data imported successfully.');
+        $output->writeln('Order imported successfully.');
         return Command::SUCCESS;
     }
 }

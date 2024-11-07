@@ -1,19 +1,24 @@
-# see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
     annotations: false
     http_method_override: false
     handle_all_throwables: true
 
-    # Enables session support. Note that the session will ONLY be started if you read or write from it.
-    # Remove or comment this section to explicitly disable session support.
     session:
-        handler_id: null
+        handler_id: 'session.handler.redis'
         cookie_secure: auto
         cookie_samesite: lax
 
-    #esi: true
-    #fragments: true
+    serializer:
+        enabled: true
+        default_context:
+            enable_max_depth: true
+
+    http_client:
+        max_host_connections: 5
+        default_options:
+            timeout: 10
+
     php_errors:
         log: true
 

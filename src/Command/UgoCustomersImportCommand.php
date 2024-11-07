@@ -3,7 +3,12 @@
 namespace App\Command;
 
 use App\Command\CsvNormalizerTrait;
-use App\Entity\Customer;
+use App\Entity\Civility;
+use App\Entity\Order;
+use App\Entity\Resource;
+use App\Entity\User;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Csv\Exception;
 use League\Csv\Reader;
@@ -35,8 +40,7 @@ class UgoCustomersImportCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->addArgument('customersFile', InputArgument::REQUIRED, 'Path to customers CSV file');
+        $this->addArgument('customersFile', InputArgument::REQUIRED, 'Path to customers CSV file');
     }
 
     /**
@@ -67,20 +71,45 @@ class UgoCustomersImportCommand extends Command
 
         $records = $csvCustomers->getRecords() ?? [];
         foreach ($records as $record) {
-            if ($record["customer_id"] !== null) {
-                $customer = new Customer();
+            if ($record["id"] !== null) {
+                $user = new User();
                 $title = $record["title"] == 1 ? 'mme' : 'm';
-                $oldCustomer = $this->entityManager->getRepository(Customer::class)->findby(['customer_id' => $record["customer_id"], 'title' => $title]);
-                if (empty($oldCustomer)) {
-                    $customer->setCustomerId($record["customer_id"]);
-                    $customer->setTitle($title);
-                    $customer->setLastname($record["lastname"] ?? "");
-                    $customer->setFirstname($record["firstname"] ?? "");
-                    $customer->setPostalCode($record["postal_code"] ?? "");
-                    $customer->setCity($record["city"] ?? "");
-                    $customer->setEmail($record["email"] ?? "");
+                $oldCustomer = $this->entityManager->getRepository(User::class)->findOneBy([
+                    'title' => $title,
+                    'lastname' => $record["lastname"],
+                    'firstname' => $record["firstname"],
+                    'email' => $record["email"]
+                ]);
 
-                    $this->entityManager->persist($customer);
+                if ($oldCustomer === null) {
+                    $lastname = !empty($record["lastname"]) ? $record["lastname"] : "No_lastname";
+                    $firstname = !empty($record["firstname"]) ? $record["firstname"] : "No_firstname";
+                    $birthday = !empty($record["birthday"]) ? DateTime::createFromFormat('Y-m-d',$record["birthday"]) : null;
+                    $orders = !empty($record["order_id"])  ? $this->entityManager->getRepository(Order::class)->findBy(['id' => $record["order_id"]]) : [];
+                    $civilities = !empty($record["civility_id"])  ? $this->entityManager->getRepository(Civility::class)->findBy(['id' => $record["civility_id"]]) : [];
+                    $resources = !empty($record["resource_id"]) ? $this->entityManager->getRepository(Resource::class)->findBy(['id' => $record["resource_id"]]) : [];
+
+                    $user->setTitle($title);
+                    $user->setLastname($lastname);
+                    $user->setFirstname($firstname);
+                    $user->setFirstname($firstname);
+                    $user->setMobile($record["mobile"] ?? "");
+                    $user->setDateOfBirth( $birthday);
+                    $user->setPhoto($record["photo"] ?? "");
+                    $user->setPostalCode($record["postal_code"] ?? "");
+                    $user->setCity($record["city"] ?? "");
+                    $user->setEmail($record["email"] ?? "");
+//                    foreach ($orders as $order) {
+//                        $user->addOrder($order);
+//                    }
+//                    foreach ($civilities as $civility) {
+//                        $user->addCivility($civility);
+//                    }
+//                    foreach ($resources as $resource) {
+//                        $user->addResources($resource);
+//                    }
+
+                    $this->entityManager->persist($user);
                 }
             }
         }

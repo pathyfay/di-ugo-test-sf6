@@ -1,66 +1,89 @@
-#version: '3.8'
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: ./.docker/php-fpm/Dockerfile
-    container_name: backend
-    networks:
-      - localhost-network
-    depends_on:
-      - db-mysql
-    volumes:
-      - ./:/var/www/html
-      - ./var/log:/var/log
+    ftk-it-backend:
+        build:
+            context: .
+            dockerfile: ./.docker/php-fpm/Dockerfile
+        container_name: ftk-it-backend
+        networks:
+            - localhost-network
+        depends_on:
+            - ftk-it-db-mysql
+            - ftk-it-redis
+            - ftk-it-mailer
+        volumes:
+            - ./:/var/www/html
+            - ./var/log:/var/log
 
-  server-nginx:
-    build:
-      context: .
-      dockerfile: .docker/nginx/Dockerfile
-    container_name: server-nginx
-    ports:
-      - ${APP_PORT}:80
-    depends_on:
-      - backend
-    networks:
-      - localhost-network
-    volumes:
-      - ./:/var/www/html
-      - ./var/log/nginx:/var/log/nginx
+    ftk-it-server-nginx:
+        build:
+            context: .
+            dockerfile: .docker/nginx/Dockerfile
+        container_name: ftk-it-server-nginx
+        ports:
+            - ${APP_PORT}:80
+        depends_on:
+            - ftk-it-backend
+        networks:
+            - localhost-network
+        volumes:
+            - ./:/var/www/html
+            - ./var/log/nginx:/var/log/nginx
 
-  db-mysql:
-    build:
-      context: .
-      dockerfile: ./.docker/mysql/Dockerfile
-    container_name: db-mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-      MYSQL_DATABASE: "${MYSQL_DATABASE}"
-      MYSQL_USER: "${MYSQL_USER}"
-      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-      MYSQL_SERVER: "${MYSQL_SERVER}"
-      MYSQL_PORT: "${MYSQL_PORT}"
-    ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}
-    networks:
-      - localhost-network
-    volumes:
-      - mysql_data:/var/lib/mysql
+    ftk-it-db-mysql:
+        build:
+            context: .
+            dockerfile: ./.docker/mysql/Dockerfile
+        container_name: ftk-it-db-mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE}"
+            MYSQL_USER: "${MYSQL_USER}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+            MYSQL_SERVER: "${MYSQL_SERVER}"
+            MYSQL_PORT: "${MYSQL_PORT}"
+        ports:
+            - "${MYSQL_PORT}:3306"
+        networks:
+            - localhost-network
+        volumes:
+            - mysql_data:/var/lib/mysql
 
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - localhost-network
-    volumes:
-      - redis_data:/data
+    ftk-it-redis:
+        image: redis:latest
+        container_name: ftk-it-redis
+        ports:
+            - "${REDIS_PORT}:6379"
+        networks:
+            - localhost-network
+        volumes:
+            - redis_data:/data
 
-networks:
-  localhost-network:
-    driver: bridge
+    ftk-it-mailer:
+        image: schickling/mailcatcher
+        container_name: ftk-it-mailer
+        networks:
+            - localhost-network
+        ports:
+            - "${MAILER_PORT}:1025"
+            - "${MAILER_PORT_1080}:1080"
+
+    ftk-it-db-postgres:
+        image: postgres:${POSTGRES_VERSION:-16}-alpine
+        container_name: ftk-it-db-postgres
+        environment:
+            POSTGRES_DB: ${MYSQL_DATABASE}
+            POSTGRES_PASSWORD: ${MYSQL_PASSWORD}
+            POSTGRES_USER: ${MYSQL_USER}
+        ports:
+            - "${POSTGRES_PORT:-5432}:5432"
+        volumes:
+            - database_data:/var/lib/postgresql/data:rw
 
 volumes:
-  redis_data:
-  mysql_data:
+    redis_data:
+    mysql_data:
+    database_data:
+
+networks:
+    localhost-network:
+        driver: bridge

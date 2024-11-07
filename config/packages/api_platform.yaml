@@ -1,20 +1,50 @@
 api_platform:
     title: Hello API Platform
     version: 1.0.0
-    formats:
-        jsonld: ['application/ld+json']
-    docs_formats:
-        jsonld: ['application/ld+json']
-        jsonopenapi: ['application/vnd.openapi+json']
-        html: ['text/html']
+
+    handle_symfony_errors: true
+    exception_to_status:
+        Symfony\Component\HttpKernel\Exception\NotFoundHttpException: 404
+        Symfony\Component\HttpKernel\Exception\BadRequestHttpException: 400
+        Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException: 403
+        ApiPlatform\Metadata\Exception\RuntimeException: 500
+        ApiPlatform\Metadata\Exception\InvalidArgumentException: 400
+        Doctrine\ORM\OptimisticLockException: 409
+        ApiPlatform\Validator\Exception\ValidationException: 422
+        ApiPlatform\Metadata\Exception\ItemNotFoundException: 404
+        Symfony\Component\Serializer\Exception\ExceptionInterface: 400
+        ApiPlatform\Exception\InvalidArgumentException: 403
+        ApiPlatform\ParameterValidator\Exception\ValidationExceptionInterface: 400
+        Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException: 401
+
     defaults:
         stateless: true
         cache_headers:
-            vary: ['Content-Type', 'Authorization', 'Origin']
+            vary: [ 'Content-Type', 'Authorization', 'Origin' ]
+        pagination_items_per_page: 50
         extra_properties:
             standard_put: true
             rfc_7807_compliant_errors: true
-    keep_legacy_inflector: false
-    use_symfony_listeners: true
+
+    error_formats:
+        jsonproblem: [ 'application/problem+json' ]
+        jsonld: [ 'application/ld+json' ]
+
+    formats:
+        jsonld: [ 'application/ld+json' ]
+        json: [ 'application/json' ]
+        multipart: [ 'multipart/form-data' ]
+        html: [ 'text/html' ]
+        form: [ 'application/x-www-form-urlencoded' ]
+
+    docs_formats:
+        jsonld: [ 'application/ld+json' ]
+        json: [ 'application/json' ]
+        jsonopenapi: [ 'application/vnd.openapi+json' ]
+        html: [ 'text/html' ]
+
     serializer:
-        hydra_prefix: true
+        hydra_prefix: false
+
+    eager_loading:
+        max_joins: 400

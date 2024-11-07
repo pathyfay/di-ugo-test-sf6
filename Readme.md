@@ -1,4 +1,4 @@
-# Di-Ugo Test
+# FTK-IT Consulting
 
 ## Description
 
@@ -9,7 +9,7 @@ Et il va les exposer par le biais d'un api.
 
 1. Cloner le dépôt du project: https://github.com/pathyfay/di-ugo-test-sf6.git
 2. Exécuter `make start` ou `docker-compose up --build -d` pour lancer le docker-compose, installer les dépendances de symfony et démarrez les conteneurs.
-3. Acceder au backend : http://127.0.0.1:8080
+3. Acceder au backend : http://127.0.0.1:8000
 
 ## Importer des données
 
@@ -22,7 +22,7 @@ Pour importer les données à partir des fichiers CSV, il faut :
 php bin/console ugo:orders:import --customers --customersFile=path/to/customers.csv --purchases --purchasesFile=path/to/purchases.csv
 
 #import customers
-php bin/console ugo:customers:import --customers path/to/customers.csv
+php bin/console ugo:customers:import path/to/customers.csv
  
  #import purchases
 php bin/console ugo:purchases:import path/to/purchases.csv

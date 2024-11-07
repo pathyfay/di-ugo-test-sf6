@@ -38,7 +38,7 @@ class UgoPurchasesImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithValidFile()
     {
-        file_put_contents($this->purchasesFile, "customer_id;purchase_identifier;product_id,quantity,price,currency,date\n1,2023-10-01;prod1,2,10.00,USD,2023-10-01");
+        file_put_contents($this->purchasesFile, "id;purchase_identifier;product_id,quantity,price,currency,date\n1,2023-10-01;prod1,2,10.00,USD,2023-10-01");
         $this->commandTester->execute([
             'purchasesFile' => $this->purchasesFile,
         ]);

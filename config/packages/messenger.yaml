@@ -1,0 +1,21 @@
+framework:
+    messenger:
+        failure_transport: failed
+        transports:
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    stream: emails
+                    group: mailers
+                    auto_setup: true
+                    stream_max_entries: 10000
+                    dbindex: 1
+                retry_strategy:
+                    max_retries: 5
+                    delay: 2000       # 2s
+                    multiplier: 2     # expo backoff
+                    max_delay: 60000  # 60s
+            failed: '%env(MESSENGER_FAILED_DSN)%'
+
+        routing:
+            'App\Message\MailMessage': async

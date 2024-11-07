@@ -5,29 +5,50 @@ export NGINX_DOCUMENT_ROOT="${NGINX_DOCUMENT_ROOT:-/var/www/html/public}"
 export COMPOSER_MEMORY_LIMIT=-1
 
 echo '**** Install dependencies Symfony *****'
-composer install --optimize-autoloader
-php bin/console assets:install
+#composer install --no-interaction --prefer-dist --optimize-autoloader
 
-echo '**** Start configuration Npm *****'
-npm install -g npm@10.9.0
-npm install
+echo "🔐 Génération des clés JWT (si absentes)..."
+#php bin/console lexik:jwt:generate-keypair --skip-if-exists --no-interaction || true
 
-npm run dev
-
-chown -R www-data:www-data /var/www/html/public /var/www/html/var && \
+echo '**** Setting permissions *****'
+chown -R www-data:www-data config/jwt/private.pem config/jwt/public.pem /var/www/html/public /var/www/html/var || true
 chmod +x bin/console /var/www/html/public /var/www/html/var /var/www/html/vendor
-mkdir -p /var/www/html/var/cache /var/www/html/var/log && \
+mkdir -p /var/log/supervisor /var/www/html/var/cache /var/www/html/var/log && \
 chown -R www-data:www-data /var/www/html/var/cache /var/www/html/var/log && \
 chmod -R 750 /var/www/html/var/cache /var/www/html/var/log
+chmod 600 config/jwt/private.pem || true
+chmod 644 config/jwt/public.pem || true
 
-echo '**** Initialiaze BDD  and Import Csv *****'
-php bin/console doctrine:database:create
-php bin/console doctrine:migrations:migrate
+echo '**** Doctrine cache & migration BDD  *****'
+#php bin/console doctrine:database:create --if-not-exists  || true
+#php bin/console make:migration  && \
+#php bin/console doctrine:migrations:migrate  && \
+#php bin/console cache:clear  && \
+#php bin/console doctrine:cache:clear-metadata  && \
+#php bin/console doctrine:cache:clear-query  && \
+#php bin/console doctrine:cache:clear-result
 
-php bin/console ugo:orders:import --customers /var/www/html/data/csv/customers.csv --purchases /var/www/html/data/csv/purchases.csv
+echo "Assets Symfony..."
+php bin/console assets:install --no-interaction || true
 
-echo '**** Fpm starting *****'
-/usr/local/sbin/php-fpm --nodaemonize
+echo '**** Install & build configuration Npm *****'
+#yarn install
+#yarn run build
+
+echo "Configuration CRON..."
+chmod 0644 /etc/cron.d/ftk-it-cron
+crontab /etc/cron.d/ftk-it-cron
+service cron start || cron
+
+# Prod (daemon)
+#php bin/console messenger:consume async -vv
+#php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M --limit=500
+
+#php bin/console messenger:failed:show
+#php bin/console messenger:failed:retry
+#php bin/console messenger:failed:remove <id>
+
+echo "Lancement de supervisord..."
+exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
 
 echo '**** End configuration Symfony *****'
-

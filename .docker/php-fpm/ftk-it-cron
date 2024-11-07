@@ -1,0 +1,9 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+*/8 * * * * www-data /bin/bash -c ". /etc/profile; /usr/local/bin/php -d memory_limit=-1 /var/www/backend/bin/console app:notifications:send-birthdays"
+
+#*/3 * * * * www-data /bin/bash -c ". /etc/profile; /usr/local/bin/php -d memory_limit=-1 /var/www/backend/bin/console ugo:customers:import"
+#*/7 * * * * www-data /bin/bash -c ". /etc/profile; /usr/local/bin/php -d memory_limit=-1 /var/www/backend/bin/console app:ocr-processing"
+#*/10 * * * * www-data /bin/bash -c ". /etc/profile; /usr/local/bin/php -d memory_limit=-1 /var/www/backend/bin/console app:update-files"
+#0 * * * * www-data /bin/bash -c ". /etc/profile; /usr/local/bin/php -d memory_limit=-1 /var/www/backend/bin/console app:logs:purge"

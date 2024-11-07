@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>
+        Détails d' order N°{{ order.id }}
+    </h1>
+    <div class="p-4">
+        <form class="float-end mb-4" action="{{ path('order_list') }}" method="get" style="display: inline;">
+            <button type="submit" class="btn btn-info m-3">Retour à la liste des orders</button>
+        </form>
+        <div>
+            <strong>Order date :</strong> {{ order.createdAt | date('Y-m-d H:i:s')}}
+        </div>
+        <div>
+            <strong>Product Nom :</strong>
+            {% for product in order.products %}
+                <span>{{ product.nom }}</span>
+                {% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        <div>
+            <strong>Quantité :</strong> {{ order.quantity }}
+        </div>
+        <div>
+            <strong>Tva :</strong> {{ order.tva }}
+        </div>
+        <div>
+            <strong>Montant total :</strong> {{ order.totalAmount }}
+        </div>
+        <div>
+            <strong>Date de modification :</strong> {{ order.updatedAt|date('Y-m-d H:i:s') }}
+        </div>
+        <div>
+            <strong>Statut :</strong> {{ order.status }}
+        </div>
+
+
+        <div class="border-2 app-grid-container">
+            <form class="mb-4" action="{{ path('order_list') }}" method="get" style="display: inline;">
+                <button type="submit" class="btn btn-info m-3">Retour à la liste des commandes</button>
+            </form>
+            <form class="float-end mb-4" action="{{ path('user_edit', { id: order.id }) }}" method="get"
+                  style="display: inline;">
+                <button type="submit" class="btn btn-secondary m-1">Modifier</button>
+            </form>
+
+            <form class="float-end mb-4" action="{{ path('user_delete', { id: order.id }) }}" method="post"
+                  style="display: inline;"
+                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?');">
+                <button type="submit" class="btn btn-outline-danger m-1">Supprimer</button>
+            </form>
+            <hr>
+        </div>
+
+    </div>
+{% endblock %}

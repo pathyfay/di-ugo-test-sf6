@@ -5,5 +5,11 @@
  * (and its CSS file) in your base layout (base.html.twig).
  */
 
-// any CSS you import will output into a single css file (app.css in this case)
-import './styles/app.css';
+// CSS
+import './app.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// JS
+import 'bootstrap';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'font-awesome/css/font-awesome.min.css';

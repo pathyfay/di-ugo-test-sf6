@@ -14,7 +14,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
     /**
      * @var string|false
      */
-    private string|false $customersFile;
+    private string|false $usersFile;
 
     /**
      * @var string|false
@@ -34,10 +34,10 @@ class UgoOrdersImportCommandTest extends KernelTestCase
         self::bootKernel();
         $application = new Application();
         $entityManager = self::$kernel->getContainer()->get('doctrine.orm.entity_manager');
-        $customersImportCommand = new UgoCustomersImportCommand($entityManager);
+        $usersImportCommand = new UgoCustomersImportCommand($entityManager);
         $purchasesImportCommand = new UgoPurchasesImportCommand($entityManager);
-        $application->add(new UgoOrdersImportCommand($entityManager, $customersImportCommand, $purchasesImportCommand));
-        $application->add($customersImportCommand);
+        $application->add(new UgoOrdersImportCommand($entityManager, $usersImportCommand, $purchasesImportCommand));
+        $application->add($usersImportCommand);
         $application->add($purchasesImportCommand);
 
         $this->commandTester = new CommandTester($application->find('ugo:orders:import'));
@@ -50,7 +50,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithNonOptions()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         file_put_contents($this->purchasesFile, "customer_id;purchase_identifier;product_id,quantity,price,currency,date\n1,2023-10-01;prod1,2,10.00,USD,2023-10-01");
         $this->commandTester->execute([
                 'customersFile' => $this->customersFile,
@@ -79,7 +79,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
         ]);
 
         $output = $this->commandTester->getDisplay();
-        $this->assertStringContainsString('You must add a csv customer.csv.', $output);
+        $this->assertStringContainsString('You must add a csv user.csv.', $output);
 
         unlink($this->customersFile);
     }
@@ -89,7 +89,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithMissingPuchasesFile()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         $this->commandTester->execute([
             'customersFile' => $this->customersFile,
             'purchasesFile' => '',
@@ -108,7 +108,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithValidFiles()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         file_put_contents($this->purchasesFile, "customer_id;purchase_identifier;product_id,quantity,price,currency,date\n1,2023-10-01;prod1,2,10.00,USD,2023-10-01");
         $this->commandTester->execute([
             'customersFile' => $this->customersFile,
