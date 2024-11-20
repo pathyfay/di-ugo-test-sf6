@@ -1,16 +1,25 @@
 api_platform:
     title: Hello API Platform
     version: 1.0.0
+    exception_to_status:
+        ApiPlatform\Metadata\Exception\InvalidArgumentException: 400
+        ApiPlatform\Metadata\Exception\ItemNotFoundException: 404
+        ApiPlatform\Metadata\Exception\OperationException: 500
     formats:
-        jsonld: ['application/ld+json']
-    docs_formats:
-        jsonld: ['application/ld+json']
-        jsonopenapi: ['application/vnd.openapi+json']
+        jsonld: [ 'application/ld+json' ]
+        json: ['application/json']
+        multipart: ['multipart/form-data']
         html: ['text/html']
+        form: ['application/x-www-form-urlencoded']
+    docs_formats:
+        jsonld: [ 'application/ld+json' ]
+        json: [ 'application/json' ]
+        jsonopenapi: [ 'application/vnd.openapi+json' ]
+        html: [ 'text/html' ]
     defaults:
         stateless: true
         cache_headers:
-            vary: ['Content-Type', 'Authorization', 'Origin']
+            vary: [ 'Content-Type', 'Authorization', 'Origin' ]
         extra_properties:
             standard_put: true
             rfc_7807_compliant_errors: true

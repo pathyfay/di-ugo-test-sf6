@@ -41,7 +41,7 @@ services:
       MYSQL_SERVER: "${MYSQL_SERVER}"
       MYSQL_PORT: "${MYSQL_PORT}"
     ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}
+      - "3307:3306"
     networks:
       - localhost-network
     volumes:

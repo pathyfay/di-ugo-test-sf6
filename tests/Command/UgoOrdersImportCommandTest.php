@@ -50,7 +50,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithNonOptions()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         file_put_contents($this->purchasesFile, "customer_id;purchase_identifier;product_id,quantity,price,currency,date\n1,2023-10-01;prod1,2,10.00,USD,2023-10-01");
         $this->commandTester->execute([
                 'customersFile' => $this->customersFile,
@@ -89,7 +89,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithMissingPuchasesFile()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         $this->commandTester->execute([
             'customersFile' => $this->customersFile,
             'purchasesFile' => '',
@@ -108,7 +108,7 @@ class UgoOrdersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithValidFiles()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname,postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         file_put_contents($this->purchasesFile, "customer_id;purchase_identifier;product_id,quantity,price,currency,date\n1,2023-10-01;prod1,2,10.00,USD,2023-10-01");
         $this->commandTester->execute([
             'customersFile' => $this->customersFile,

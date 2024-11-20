@@ -11,7 +11,7 @@
         <table class="table table-striped table-bordered overflow-x-auto">
             <thead>
             <tr>
-                {% for property in ['Title','customer_id', 'firstname', 'lastname', 'email', 'city', 'postal_code', 'actions'] %}
+                {% for property in ['Title','id', 'firstname', 'lastname', 'email', 'mobile', 'city', 'postal_code', 'actions'] %}
                     <th>{{ property|capitalize }}</th>
                 {% endfor %}
             </tr>
@@ -19,20 +19,20 @@
             <tbody>
             {% for customer in customers %}
                 <tr>
-                    {% for property in ['title','customerId', 'firstname', 'lastname', 'email', 'city', 'postalCode'] %}
+                    {% for property in ['title','id', 'firstname', 'lastname', 'email',  'mobile', 'city', 'postalCode'] %}
                         <td>{{ attribute(customer, property) }}</td>
                     {% endfor %}
                     <td>
                         <div class="btn-group">
-                            <form action="{{ path('customer_show', { id: customer.customerId }) }}" method="get"
+                            <form action="{{ path('customer_show', { id: customer.id }) }}" method="get"
                                   style="display: inline;">
                                 <button type="submit" class="btn btn-outline-primary m-1">Voir</button>
                             </form>
-                            <form action="{{ path('customer_edit', { id: customer.customerId }) }}" method="get"
+                            <form action="{{ path('customer_edit', { id: customer.id }) }}" method="get"
                                   style="display: inline;">
                                 <button type="submit" class="btn btn-outline-secondary m-1">Modifier</button>
                             </form>
-                            <form action="{{ path('customer_delete', { id: customer.customerId }) }}" method="post"
+                            <form action="{{ path('customer_delete', { id: customer.id }) }}" method="post"
                                   style="display: inline;"
                                   onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
                                 <button type="submit" class="btn btn-outline-danger m-1">Supprimer</button>

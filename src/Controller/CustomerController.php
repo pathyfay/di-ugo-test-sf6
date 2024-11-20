@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Service\ImageUploadService;
+use App\Traits\ImageUploaderTrait;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,10 +16,14 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class CustomerController extends AbstractController
 {
-    public function __construct(public EntityManagerInterface $entityManager)
+    use ImageUploaderTrait;
+    public function __construct(public EntityManagerInterface $entityManager, public ImageUploadService $imageUploadService)
     {
     }
 
+    /**
+     * @throws Exception
+     */
     #[Route('/customer/new', name: 'customer_new')]
     #[Route('/customer/{id}/edit', name: 'customer_edit')]
     public function new_edit(Request $request, Customer $customer = null): Response
@@ -24,7 +31,7 @@ class CustomerController extends AbstractController
         if ($customer === null) {
             $customer = new Customer();
         } else {
-            $customer = $this->entityManager->getRepository(Customer::class)->find(['customer_id' => $customer->getCustomerId()]);
+            $customer = $this->entityManager->getRepository(Customer::class)->find(['id' => $customer->getId()]);
             if (!$customer) {
                 throw $this->createNotFoundException('Customer not found');
             }
@@ -33,10 +40,20 @@ class CustomerController extends AbstractController
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$customer->getCustomerId()) {
+            $photoFile = $form->get('photo')->getData();
+            if ($photoFile) {
+                $imagePath = $this->imageUploadService->upload($photoFile);
+                $customer->setPhoto($imagePath);
+            }
+
+            if (!$customer->getId()) {
                 $this->entityManager->persist($customer);
             }
             $this->entityManager->flush();
+
+            if (!$customer->getId()) {
+                return $this->redirectToRoute('customer_show', ['id' => $customer->getCustomerId()]);
+            }
 
             return $this->redirectToRoute('customer_lists');
         }
@@ -59,7 +76,7 @@ class CustomerController extends AbstractController
     #[Route('/customer/{id}', name: 'customer_show')]
     public function show(Customer $customer): Response
     {
-        $customer = $this->entityManager->getRepository(Customer::class)->findOneBy(['customer_id' => $customer->getCustomerId()]);
+        $customer = $this->entityManager->getRepository(Customer::class)->findOneBy(['id' => $customer->getId()]);
         $totals = [];
         if ($customer->getOrders()->count() > 0) {
             foreach ($customer->getOrders() as $order) {

@@ -3,18 +3,58 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\ApiResource\CustomerOrdersController;
 use App\Repository\CustomerRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new GetCollection(uriTemplate: '/customers/{id}/orders')
+        new GetCollection(
+            uriTemplate: '/customers',
+            controller: CustomerOrdersController::class . '::getCustomers',
+            description: 'Get all customers',
+            normalizationContext: ['groups' => 'customer_details']),
+
+        new GetCollection(
+            uriTemplate: '/customers/{id}/orders',
+            uriVariables: ['id'],
+            controller: CustomerOrdersController::class . '::getCustomerOrders',
+            description: 'Get orders for a specific customer',
+            normalizationContext: ['groups' => 'order_details']
+        ),
+
+        new Put(
+            uriTemplate: '/customers/{id}/edit',
+            uriVariables: ['id'],
+            controller: CustomerOrdersController::class . '::updateCustomerOrders',
+            description: 'Put a specific customer',
+            deserialize: false
+        ),
+
+        new Post(
+            uriTemplate: '/customers/new',
+            controller: CustomerOrdersController::class . '::createCustomerOrders',
+            description: 'Post a specific customer',
+            deserialize: false
+        ),
+
+        new Delete(
+            uriTemplate: '/customers/{id}/delete',
+            uriVariables: ['id'],
+            controller: CustomerOrdersController::class . '::deleteCustomerOrders',
+            description: 'Delete a specific customer',
+        )
     ]
 )]
 class Customer
@@ -22,28 +62,48 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", unique: true)]
-    private ?int $customer_id = null;
+    #[Groups(['customer_details'])]
+    private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['customer_details'])]
     private string $title;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['customer_details'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['customer_details'])]
     private ?string $lastname = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['customer_details'])]
     private ?string $postal_code = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['customer_details'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups(['customer_details'])]
     private ?string $email = null;
 
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')]
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer', cascade: ['persist', 'remove'])]
+    #[Groups(['customer_details', 'order_details'])]
     private Collection $orders;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    #[Groups(['customer_details'])]
+    private ?string $mobile = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['customer_details'])]
+    private ?DateTimeInterface $birthday = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['customer_details'])]
+    private ?string $photo = null;
 
     public function __construct()
     {
@@ -53,19 +113,18 @@ class Customer
     /**
      * @return int|null
      */
-    public function getCustomerId(): ?int
+    public function getId(): ?int
     {
-        return $this->customer_id;
+        return $this->id;
     }
 
     /**
-     * @param int|null $customer_id
+     * @param int|null $id
      * @return $this
      */
-    public function setCustomerId(?int $customer_id): static
+    public function setId(?int $id): static
     {
-        $this->customer_id = $customer_id;
-
+        $this->id = $id;
         return $this;
     }
 
@@ -217,6 +276,63 @@ class Customer
                 $order->setCustomer(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMobile(): ?string
+    {
+        return $this->mobile;
+    }
+
+    /**
+     * @param string|null $mobile
+     * @return $this
+     */
+    public function setMobile(?string $mobile): static
+    {
+        $this->mobile = $mobile;
+
+        return $this;
+    }
+
+    /**
+     * @return DateTimeInterface|null
+     */
+    public function getBirthday(): ?DateTimeInterface
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param DateTimeInterface|null $birthday
+     * @return $this
+     */
+    public function setBirthday(?DateTimeInterface $birthday): static
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    /**
+     * @param string|null $photo
+     * @return $this
+     */
+    public function setPhoto(string|null $photo): static
+    {
+        $this->photo = $photo;
 
         return $this;
     }

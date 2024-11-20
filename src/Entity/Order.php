@@ -7,6 +7,7 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -15,28 +16,37 @@ class Order
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['customer_details', 'order_details'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private DateTimeInterface $order_id;
+    #[Groups(['customer_details', 'order_details'])]
+    private DateTimeInterface $order_date;
 
     #[ORM\ManyToOne(targetEntity: Customer::class, cascade: ['persist'], inversedBy: 'orders')]
-    #[ORM\JoinColumn(name: "customer_id", referencedColumnName: "customer_id", nullable: true)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['customer_details', 'order_details'])]
     private ?Customer $customer = null;
 
     #[ORM\Column]
+    #[Groups(['customer_details', 'order_details'])]
     private int $quantity = 0;
 
-    #[ORM\Column]
-    private int $product_id = 0;
+    #[ORM\ManyToOne(targetEntity: Product::class, cascade: ['persist'], inversedBy: 'orders')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['customer_details', 'order_details'])]
+    private ?Product $product =  null;
 
     #[ORM\Column]
+    #[Groups(['customer_details', 'order_details'])]
     private int $price = 0;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['customer_details', 'order_details'])]
     private ?string $currency = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['customer_details', 'order_details'])]
     private DateTimeInterface $date;
 
     public function getId(): ?int
@@ -63,14 +73,14 @@ class Order
         return $this;
     }
 
-    public function getProductId(): int
+    public function getProduct(): ?Product
     {
-        return $this->product_id;
+        return $this->product;
     }
 
-    public function setProductId(int $product_id): void
+    public function setProduct(?Product $product): void
     {
-        $this->product_id = $product_id;
+        $this->product = $product;
     }
 
     public function getQuantity(): ?int
@@ -121,13 +131,13 @@ class Order
         return $this;
     }
 
-    public function getOrderId(): DateTimeInterface
+    public function getOrderDate(): DateTimeInterface
     {
-        return $this->order_id;
+        return $this->order_date;
     }
 
-    public function setOrderId(DateTime $order_id): void
+    public function setOrderDate(DateTime $order_date): void
     {
-        $this->order_id = $order_id;
+        $this->order_date = $order_date;
     }
 }

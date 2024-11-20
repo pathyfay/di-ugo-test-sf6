@@ -98,8 +98,16 @@ body {
 .rounded-image img {
     width: 10rem;
     height: 10rem;
+    border: solid 1px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+
+.app-form-70 {
+    width: 80%;
+    margin: auto;
+    padding: 2rem;
 }
 
 .form-check-input {

@@ -38,7 +38,7 @@ class UgoCustomersImportCommandTest extends KernelTestCase
      */
     public function testExecuteWithValidFile()
     {
-        file_put_contents($this->customersFile, "customer_id,title,lastname,firstname;postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
+        file_put_contents($this->customersFile, "id,title,lastname,firstname;postal_code,city,email\n1,1,Doe,John,12345,Paris,john@example.com");
         $this->commandTester->execute([
             'customersFile' => $this->customersFile,
         ]);

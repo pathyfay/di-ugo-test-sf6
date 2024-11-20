@@ -8,12 +8,12 @@ when@dev:
             main:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
-                level: debug
+                level: warning
                 channels: ["!event"]
-            critical_logs:
+            debug_logs:
                 type: stream
-                path: "%kernel.logs_dir%/critical.log"
-                level: critical
+                path: "%kernel.logs_dir%/debug.log"
+                level: debug
             console:
                 type: console
                 process_psr_3_messages: false
@@ -21,7 +21,7 @@ when@dev:
             rotating_file:
                 type: rotating_file
                 path: "%kernel.logs_dir%/rotating_%kernel.environment%.log"
-                level: debug
+                level: error
                 max_files: 10
 
 when@test:
@@ -64,5 +64,5 @@ when@prod:
             rotating_file:
                 type: rotating_file
                 path: "%kernel.logs_dir%/sf6_%kernel.environment%.log"
-                level: debug
+                level: warning
                 max_files: 10

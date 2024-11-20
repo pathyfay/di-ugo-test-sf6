@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Customer;
 use App\Entity\Order;
+use App\Entity\Product;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\AbstractType;
@@ -15,14 +18,14 @@ class OrderType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('order_id', DateType::class, [
+            ->add('order_date', DateType::class, [
                     'widget' => 'single_text',
                     'html5' => true,
                     'attr' => [
                         'class' => 'form-control',
-                        'placeholder' => 'Sélectionnez Order Id',
+                        'placeholder' => 'Sélectionnez Order date',
                     ],
-                    'label' => 'Order Id',
+                    'label' => 'Order date',
                     'label_attr' => [
                         'class' => 'fw-bold mb-2'
                     ]
@@ -38,16 +41,18 @@ class OrderType extends AbstractType
                     'class' => 'fw-bold py-3 px-1',
                 ],
                 'row_attr' => ['class' => 'form-group mb-3']])
-            ->add('product_id', TextType::class, [
-                'label' => 'Product Id :',
+            ->add('product', EntityType::class, [
+                'class' => Product::class,
+                'choice_label' => 'id',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Product Id',
+                    'placeholder' => 'Sélectionnez Product Id',
                 ],
+                'label' => 'Product Id',
                 'label_attr' => [
-                    'class' => 'fw-bold py-3 px-1',
-                ],
-                'row_attr' => ['class' => 'form-group mb-3']])
+                    'class' => 'fw-bold mb-2'
+                ]
+            ])
             ->add('price', TextType::class, [
                 'label' => 'Price :',
                 'attr' => [
@@ -87,11 +92,18 @@ class OrderType extends AbstractType
                     'class' => 'fw-bold mb-2'
                 ]
             ])
-//            ->add('customer', EntityType::class, [
-//                'class' => Customer::class,
-//                'choice_label' => 'customerId',
-//            ])
-        ;
+            ->add('customer', EntityType::class, [
+                'class' => Customer::class,
+                'choice_label' => 'id',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Sélectionnez customer Id',
+                ],
+                'label' => 'customer Id',
+                'label_attr' => [
+                    'class' => 'fw-bold mb-2'
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

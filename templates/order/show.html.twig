@@ -10,10 +10,10 @@
             <button type="submit" class="btn btn-info m-3">Retour à la liste des orders</button>
         </form>
         <div>
-            <strong>Order id :</strong> {{ order.orderId | date('Y-m-d H:i:s')}}
+            <strong>Order date :</strong> {{ order.orderDate | date('Y-m-d H:i:s')}}
         </div>
         <div>
-            <strong>Product Id :</strong> {{ order.productId }}
+            <strong>Product Id :</strong> {{ order.product.id }}
         </div>
         <div>
             <strong>Quantité :</strong> {{ order.quantity }}

@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <h1>Détails du client N°{{ customer.customerId }}</h1>
+    <h1 class="text-decoration-underline">Détails du client N°{{ customer.id }}</h1>
     <div class="app-left-50 p-4">
         <div>
             <strong>Civilité :</strong> {{ customer.title }}
@@ -17,25 +17,48 @@
             <strong>Email :</strong> {{ customer.email }}
         </div>
         <div>
+            <strong>Portable :</strong> {{ customer.mobile }}
+        </div>
+        <div>
+            <strong>Birthday :</strong> {{ customer.birthday | date('Y-m-d') }}
+        </div>
+        <div>
             <strong>Adresse :</strong> {{ customer.postalCode }} {{ customer.city }}
         </div>
     </div>
 
     <div class="app-right-50 p-4">
-        <div class="rounded-image">
-            <img src="{{ asset('build/images/user_default.png') }}" alt="Image user">
+        <div class="float-end rounded-image">
+            {% if customer.photo is not null %}
+                <img src="{{ customer.photo }}" alt="Image user">
+            {% else %}
+                <img src="{{ asset('build/images/user_default.png') }}" alt="Image user">
+            {% endif %}
         </div>
     </div>
 
     <div class="border-2 app-grid-container">
-        <form class="float-end mb-4" action="{{ path('customer_lists') }}" method="get" style="display: inline;">
+        <form class="mb-4" action="{{ path('customer_lists') }}" method="get" style="display: inline;">
             <button type="submit" class="btn btn-info m-3">Retour à la liste des clients</button>
+        </form>
+        <form class="float-end mb-4" action="{{ path('customer_edit', { id: customer.id }) }}" method="get"
+              style="display: inline;">
+            <button type="submit" class="btn btn-secondary m-1">Modifier</button>
+        </form>
+
+        <form class="float-end mb-4" action="{{ path('customer_delete', { id: customer.id }) }}" method="post"
+              style="display: inline;"
+              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
+            <button type="submit" class="btn btn-outline-danger m-1">Supprimer</button>
         </form>
         <hr>
     </div>
 
     <div class="container mt-5">
         <h1>Liste des Commandes</h1>
+        <form class="float-end mb-4" action="{{ path('order_new') }}" method="get" style="display: inline;">
+            <button type="submit" class="btn btn-success m-2">Ajout Order</button>
+        </form>
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
@@ -47,8 +70,8 @@
             <tbody>
             {% for order in customer.orders %}
                 <tr>
-                    <td>{{ order.productId }}</td>
-                    <td>{{ order.orderId |date('Y-m-d H:i:s') }}</td>
+                    <td>{{ order.product.id }}</td>
+                    <td>{{ order.orderDate |date('Y-m-d H:i:s') }}</td>
                     <td>{{ order.quantity }}</td>
                     <td>{{ order.price | number_format(2) }}</td>
                     <td>{{ order.currency }}</td>

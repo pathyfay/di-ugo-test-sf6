@@ -59,7 +59,7 @@ class OrderController extends AbstractController
     #[Route('/order/{id}', name: 'order_show')]
     public function show(Order $order): Response
     {
-        $order = $this->entityManager->getRepository(Order::class)->findOneBy(['order_id' => $order->getOrderId()]);
+        $order = $this->entityManager->getRepository(Order::class)->findOneBy(['id' => $order->getId()]);
         return $this->render('order/show.html.twig', [
             'order' => $order
         ]);

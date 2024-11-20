@@ -35,8 +35,7 @@ class UgoCustomersImportCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->addArgument('customersFile', InputArgument::REQUIRED, 'Path to customers CSV file');
+        $this->addArgument('customersFile', InputArgument::REQUIRED, 'Path to customers CSV file');
     }
 
     /**
@@ -67,15 +66,22 @@ class UgoCustomersImportCommand extends Command
 
         $records = $csvCustomers->getRecords() ?? [];
         foreach ($records as $record) {
-            if ($record["customer_id"] !== null) {
+            if ($record["id"] !== null) {
                 $customer = new Customer();
                 $title = $record["title"] == 1 ? 'mme' : 'm';
-                $oldCustomer = $this->entityManager->getRepository(Customer::class)->findby(['customer_id' => $record["customer_id"], 'title' => $title]);
-                if (empty($oldCustomer)) {
-                    $customer->setCustomerId($record["customer_id"]);
+                $oldCustomer = $this->entityManager->getRepository(Customer::class)->findOneBy([
+                    'title' => $title,
+                    'lastname' => $record["lastname"],
+                    'firstname' => $record["firstname"],
+                    'email' => $record["email"]
+                ]);
+
+                if ($oldCustomer === null) {
+                    $lastname = !empty($record["lastname"]) ? $record["lastname"] : "No_lastname";
+                    $firstname = !empty($record["firstname"]) ? $record["firstname"] : "No_firstname";
                     $customer->setTitle($title);
-                    $customer->setLastname($record["lastname"] ?? "");
-                    $customer->setFirstname($record["firstname"] ?? "");
+                    $customer->setLastname($lastname);
+                    $customer->setFirstname($firstname);
                     $customer->setPostalCode($record["postal_code"] ?? "");
                     $customer->setCity($record["city"] ?? "");
                     $customer->setEmail($record["email"] ?? "");

@@ -16,7 +16,7 @@ ENV MYSQL_PORT=${MYSQL_PORT}
 
 COPY ./.docker/mysql/init.sql /docker-entrypoint-initdb.d/
 
-EXPOSE ${MYSQL_PORT}
+#EXPOSE ${MYSQL_PORT}
 
 #CMD ["/bin/bash", "-c", "/docker-entrypoint-initdb.d/init.sh && exec mysqld"]
 CMD ["mysqld"]

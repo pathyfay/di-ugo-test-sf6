@@ -11,7 +11,7 @@
         <table class="table table-primary table-striped table-bordered overflow-x-auto">
             <thead>
             <tr>
-                {% for property in ['id','product_id', 'Purchase_identifier', 'Quantity', 'Price', 'Currency', 'Date', 'actions'] %}
+                {% for property in ['id','product_id','customer_id', 'order_id', 'Quantity', 'Price', 'Currency', 'Date', 'actions'] %}
                     <th>{{ property|capitalize }}</th>
                 {% endfor %}
             </tr>
@@ -20,8 +20,9 @@
             {% for order in orders %}
                 <tr>
                     <td>{{ order.id }}</td>
-                    <td>{{ order.productId }}</td>
-                    <td>{{ order.orderId |date('Y-m-d H:i:s') }}</td>
+                    <td>{{ order.product.id }}</td>
+                    <td>{{ order.customer.id }}</td>
+                    <td>{{ order.orderDate.timestamp }}</td>
                     <td>{{ order.quantity }}</td>
                     <td>{{ order.price | number_format(2) }}</td>
                     <td>{{ order.currency }}</td>
@@ -46,7 +47,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="3">Aucun client trouvé.</td>
+                    <td colspan="7">Aucun client trouvé.</td>
                 </tr>
             {% endfor %}
             </tbody>

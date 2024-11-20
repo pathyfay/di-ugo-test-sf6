@@ -4,11 +4,14 @@ namespace App\Form;
 
 use App\Entity\Customer;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class CustomerType extends AbstractType
 {
@@ -29,13 +32,12 @@ class CustomerType extends AbstractType
                 'label_attr' => [
                     'class' => 'fw-bold py-3 px-1',
                 ],
-//                'row_attr' => ['class' => 'p-3'],
             ])
             ->add('firstname', TextType::class, [
                 'label' => 'Firstname :',
                 'attr' => [
                     'class' => 'form-control',
-//                    'placeholder' => 'Firstname',
+                    'placeholder' => 'Firstname',
                 ],
                 'label_attr' => [
                     'class' => 'fw-bold py-3 px-1',
@@ -46,7 +48,7 @@ class CustomerType extends AbstractType
                 'label' => 'Lastname :',
                 'attr' => [
                     'class' => 'form-control',
-//                    'placeholder' => 'Lastname',
+                    'placeholder' => 'Lastname',
                 ],
                 'label_attr' => [
                     'class' => 'fw-bold py-3 px-1',
@@ -85,8 +87,52 @@ class CustomerType extends AbstractType
                     'class' => 'fw-bold py-3 px-1',
                 ],
                 'row_attr' => ['class' => 'form-group mb-3'],
-            ]);
-
+            ])
+            ->add('mobile', TelType::class, [
+                'label' => 'Numéro de téléphone :',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Votre numéro de téléphone +33',
+                    'inputmode' => 'tel',
+                ],
+                'label_attr' => [
+                    'class' => 'fw-bold py-3 px-1',
+                ],
+                'row_attr' => ['class' => 'form-group mb-3'],
+                'required' => false
+            ])
+            ->add('birthday', DateType::class, [
+                'widget' => 'single_text',
+                'html5' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Sélectionnez une date d\'anniversaire',
+                ],
+                'label' => 'Birthday',
+                'label_attr' => [
+                    'class' => 'fw-bold mb-2'
+                ],
+                'required' => false
+            ])
+            ->add('photo', FileType::class, [
+                'label' => 'Télécharger une photo :',
+                'attr' => [
+                    'class' => 'form-control',
+                    'accept' => 'image/*',
+                ],
+                'label_attr' => [
+                    'class' => 'fw-bold py-3 px-1',
+                ],
+                'row_attr' => ['class' => 'form-group mb-3'],
+                'required' => false,
+                'data_class' => null,
+                'constraints' => [
+                    new Assert\File([
+                        'mimeTypes' => ['image/jpeg','image/jpg', 'image/png', 'image/gif'],
+                    ])
+                ]
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
