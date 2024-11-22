@@ -6,6 +6,7 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        public: true
         bind:
             $targetDirectory: '%images_directory%'
             $circularReferenceHandler: '@App\Handler\CircularReferenceHandler'
@@ -18,18 +19,21 @@ services:
         public: true
 
     App\EventListener\CorsListener:
+        public: true
         tags:
             - { name: kernel.event_listener, event: kernel.response }
 
-    #    App\Serializer\CustomerNormalizer:
-    #        decorates: 'serializer.normalizer.object'
-    #        arguments:
-    #            $decorated: '@App\Serializer\CustomerNormalizer.inner'
-    #            $circularReferenceHandler: '@App\Handler\CircularReferenceHandler'
-    #        tags:
-    #            - { name: 'serializer.normalizer', priority: 100 }
+    App\EventListener\CheckCustomerExistsListener:
+        public: true
+        tags:
+            - { name: kernel.event_listener }
+
+    App\EventListener\ExceptionListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.exception' }
 
     Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
+        public: true
         arguments:
             $defaultContext:
                 circular_reference_handler: '@App\Handler\CircularReferenceHandler'

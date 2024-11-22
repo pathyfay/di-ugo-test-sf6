@@ -1,10 +1,12 @@
 framework:
     cache:
-        default_redis_provider: "redis://redis:6379"
         pools:
+            app.cache:
+                adapter: cache.adapter.redis
+                provider: '%env(REDIS_URL)%'
             doctrine.result_cache_pool:
                 adapter: cache.adapter.redis
+                provider: '%env(REDIS_URL)%'
             doctrine.system_cache_pool:
                 adapter: cache.adapter.redis
-            doctrine.region_cache_pool:
-                adapter: cache.adapter.redis
+                provider: '%env(REDIS_URL)%'

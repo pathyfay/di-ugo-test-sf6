@@ -4,65 +4,65 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\ApiResource\CustomerOrdersController;
+use App\ApiResource\CustomerApiController;
 use App\Repository\CustomerRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(
             uriTemplate: '/customers',
-            controller: CustomerOrdersController::class . '::getCustomers',
+            controller: CustomerApiController::class . '::getCustomers',
             description: 'Get all customers',
-            normalizationContext: ['groups' => 'customer_details']),
+            normalizationContext: ['groups' => 'customer_details'],
+            denormalizationContext: ['groups' => 'customer_write'],
+            forceEager: false
+        ),
 
-        new GetCollection(
-            uriTemplate: '/customers/{id}/orders',
+        new Get(
+            uriTemplate: '/customers/{id}',
             uriVariables: ['id'],
-            controller: CustomerOrdersController::class . '::getCustomerOrders',
+            controller: CustomerApiController::class . '::getCustomerOrders',
             description: 'Get orders for a specific customer',
-            normalizationContext: ['groups' => 'order_details']
+            normalizationContext: ['groups' => 'order_details'],
+            forceEager: false
         ),
 
         new Put(
             uriTemplate: '/customers/{id}/edit',
             uriVariables: ['id'],
-            controller: CustomerOrdersController::class . '::updateCustomerOrders',
+            controller: CustomerApiController::class . '::updateCustomerOrders',
             description: 'Put a specific customer',
             deserialize: false
         ),
 
         new Post(
             uriTemplate: '/customers/new',
-            controller: CustomerOrdersController::class . '::createCustomerOrders',
+            controller: CustomerApiController::class . '::createCustomerOrders',
             description: 'Post a specific customer',
             deserialize: false
         ),
 
-        new Delete(
-            uriTemplate: '/customers/{id}/delete',
-            uriVariables: ['id'],
-            controller: CustomerOrdersController::class . '::deleteCustomerOrders',
-            description: 'Delete a specific customer',
-        )
-    ]
+        new Delete()
+    ],
 )]
 class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", unique: true)]
-    #[Groups(['customer_details'])]
+    #[Groups(['customer_write' ,'customer_details'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
@@ -89,8 +89,9 @@ class Customer
     #[Groups(['customer_details'])]
     private ?string $email = null;
 
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer', cascade: ['persist', 'remove'], fetch: "EAGER")]
     #[Groups(['customer_details', 'order_details'])]
+    #[MaxDepth(1)]
     private Collection $orders;
 
     #[ORM\Column(length: 30, nullable: true)]

@@ -2,14 +2,57 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use App\ApiResource\ProductApiController;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\MaxDepth;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/products',
+            controller: ProductApiController::class . '::getProducts',
+            description: 'Get all products',
+            normalizationContext: ['groups' => 'order_details'],
+            forceEager: false
+        ),
+        new Delete(),
+        new Get(
+            uriTemplate: '/products/{id}',
+            uriVariables: ['id'],
+            controller: ProductApiController::class . '::getProductById',
+            description: 'Get product by id',
+            normalizationContext: ['groups' => 'order_details'],
+            forceEager: false
+        ),
+
+        new Put(
+            uriTemplate: '/products/{id}/edit',
+            uriVariables: ['id'],
+            controller: ProductApiController::class . '::updateProduct',
+            description: 'Put a specific product',
+            deserialize: false
+        ),
+
+        new Post(
+            uriTemplate: '/products/new',
+            controller: ProductApiController::class . '::createProduct',
+            description: 'Post a specific product',
+            deserialize: false
+        )
+    ],
+)]
 class Product
 {
     #[ORM\Id]
@@ -21,6 +64,10 @@ class Product
     #[ORM\Column(length: 50, nullable: false)]
     #[Groups(['customer_details', 'order_details'])]
     private ?string $nom = null;
+
+    #[ORM\Column(length: 50, nullable: false)]
+    #[Groups(['customer_details', 'order_details'])]
+    private ?string $short_nom = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     #[Groups(['customer_details', 'order_details'])]
@@ -34,8 +81,9 @@ class Product
     #[Groups(['customer_details', 'order_details'])]
     private ?float $price = null;
 
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product')]
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'product', fetch: 'LAZY')]
     #[Groups(['order_details'])]
+    #[MaxDepth(1)]
     private Collection $orders;
 
     public function __construct()
@@ -65,6 +113,16 @@ class Product
         $this->nom = $nom;
 
         return $this;
+    }
+
+    public function getShortNom(): ?string
+    {
+        return $this->short_nom;
+    }
+
+    public function setShortNom(?string $short_nom): void
+    {
+        $this->short_nom = $short_nom;
     }
 
     public function getReference(): ?string

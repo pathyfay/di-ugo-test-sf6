@@ -5,12 +5,18 @@ api_platform:
         ApiPlatform\Metadata\Exception\InvalidArgumentException: 400
         ApiPlatform\Metadata\Exception\ItemNotFoundException: 404
         ApiPlatform\Metadata\Exception\OperationException: 500
+        Symfony\Component\HttpKernel\Exception\NotFoundHttpException: 404
+        Symfony\Component\Serializer\Exception\ExceptionInterface: 400
+        ApiPlatform\Exception\InvalidArgumentException: !php/const Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+        ApiPlatform\ParameterValidator\Exception\ValidationExceptionInterface: 400
+        Doctrine\ORM\OptimisticLockException: 409
+        ApiPlatform\Validator\Exception\ValidationException: !php/const Symfony\Component\HttpFoundation\Response::HTTP_UNPROCESSABLE_ENTITY
     formats:
         jsonld: [ 'application/ld+json' ]
-        json: ['application/json']
-        multipart: ['multipart/form-data']
-        html: ['text/html']
-        form: ['application/x-www-form-urlencoded']
+        json: [ 'application/json' ]
+        multipart: [ 'multipart/form-data' ]
+        html: [ 'text/html' ]
+        form: [ 'application/x-www-form-urlencoded' ]
     docs_formats:
         jsonld: [ 'application/ld+json' ]
         json: [ 'application/json' ]
@@ -22,8 +28,10 @@ api_platform:
             vary: [ 'Content-Type', 'Authorization', 'Origin' ]
         extra_properties:
             standard_put: true
-            rfc_7807_compliant_errors: true
+            rfc_7807_compliant_errors: false
     keep_legacy_inflector: false
     use_symfony_listeners: true
     serializer:
-        hydra_prefix: true
+        hydra_prefix: false
+    eager_loading:
+        max_joins: 100
